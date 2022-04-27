@@ -7,6 +7,7 @@ function App() {
   const [newName, setNewName] = useState("")
   const [newAge, setNewAge] = useState(0)
   const usersCollectionRef = collection(db, 'users');
+  const [refresh, setRefresh] = useState(0);
 
   const createUser = async () => {
     const user = {
@@ -14,6 +15,7 @@ function App() {
       age: Number(newAge)
     }
     await addDoc(usersCollectionRef, user);
+    setRefresh(refresh + 1);
   }
 
   const updateUser = async (id, age) => {
@@ -22,11 +24,13 @@ function App() {
       age: age + 1
     }
     await updateDoc(userDoc, newField);
+    setRefresh(refresh + 1);
   }
 
   const deleteUser = async (id) => {
     const userDoc = doc(db, 'users', id);
     await deleteDoc(userDoc);
+    setRefresh(refresh + 1);
   }
 
   useEffect(() => {
@@ -35,7 +39,7 @@ function App() {
       setUsers(data.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     }
     getUsers();
-  }, []);
+  }, [refresh]);
   return (
     <div className="App">
       <input type="text" placeholder="name..." onChange={(event) => {
